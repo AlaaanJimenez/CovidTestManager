@@ -1,11 +1,15 @@
 package com.company;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.table.TableRowSorter;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.time.LocalDate;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class Sistema {
@@ -14,7 +18,7 @@ public class Sistema {
 
     private LocalDate fechaActual=LocalDate.now();
     private ArrayList<Personal> listaPersonal;
-    private ArrayList<Paciente> listaPacientes;
+    private List<Paciente> listaPacientes;
     private HashMap<Paciente,LocalDate>MapaTurnos=new HashMap<>();
 
     ///MANEJO ARCHIVOS
@@ -30,6 +34,9 @@ public class Sistema {
     public Sistema() {
         listaPacientes=new ArrayList<>();
         listaPersonal=new ArrayList<>();
+        setPaths();
+        setListaPacientes();
+
 
     }
 
@@ -71,7 +78,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         listaPacientes.add(nuevo);
 
         System.out.println("Se creo y agrego a la liesta el siguiente paciente \n " + nuevo.toString());
-
+        AgregarPacienteAarchivo(nuevo);
     }
     
     /*
@@ -384,8 +391,80 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         this.USUARIOS_PATH=""+USER_PATH+"\\usuarios";
 
     }
+    private void setListaPacientes(){
+        this.listaPacientes=cargarPacientesDeArchivo();
+    }
+
+
+    public void AgregarPacienteAarchivo(Paciente paciente)
+    {
+
+        File newPaciente=new File(USUARIOS_PATH+"\\"+paciente.getDni()+".json");
+        ObjectMapper mapper=new ObjectMapper();
+        boolean comp=false;
+        setListaPacientes();
+
+        for (Paciente e:listaPacientes)
+        {
+            if(e.getDni()==paciente.getDni())
+            {
+                comp=true;
+            }
+        }
+        if (comp==false)
+        {
+            try {
+                mapper.writeValue(newPaciente,paciente);
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            setListaPacientes();
+        }
+        else {
+            System.out.println("El documento seleccionado ya existe en el archivo de Pacientes");
+        }
+
+
+
+    }
+
+    public ArrayList<Paciente> cargarPacientesDeArchivo()
+    {
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        ArrayList<Paciente>lista=new ArrayList<>();
+        File file=new File(USUARIOS_PATH);
+
+        if(file.isDirectory())
+        {
+            File files[]=file.listFiles();
+            for(int i=0;i<files.length;i++)
+            {
+                try {
+                    Paciente p=mapper.readValue(files[i],Paciente.class);
+                    lista.add(p);
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return lista;
+    }
+
     public void AgregarMapaArchivo()
     {
 
+
+    }
+    public void MostrarArchivoPacientes()
+    {
+        setListaPacientes();
+        for (Paciente e:listaPacientes)
+        {
+            System.out.println(e.toString());
+        }
     }
 }

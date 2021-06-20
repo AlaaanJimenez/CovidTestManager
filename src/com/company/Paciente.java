@@ -1,6 +1,8 @@
 package com.company;
 
-public class Paciente extends Persona
+import java.io.Serializable;
+
+public class Paciente extends Persona implements Serializable
 {
     private static int identificador;
     private int id;
