@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Paciente extends Persona implements Serializable
 {
@@ -45,6 +46,20 @@ public class Paciente extends Persona implements Serializable
         this.barrio = barrio;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Paciente)) return false;
+        Paciente paciente = (Paciente) o;
+        return id == paciente.id &&
+                barrio == paciente.barrio;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, barrio);
+    }
 
     @Override
     public String toString() {

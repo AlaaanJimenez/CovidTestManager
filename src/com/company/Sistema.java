@@ -8,6 +8,8 @@ import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,8 +28,8 @@ public class Sistema {
     private String USER_PATH;
     private String TURNOS_PATH;
     private String USUARIOS_PATH;
-
-
+    private Object Paciente;
+    private Object LocalDate;
 
 
     //Constructor
@@ -36,11 +38,34 @@ public class Sistema {
         listaPersonal=new ArrayList<>();
         setPaths();
         setListaPacientes();
+        setMapaTurnos();
 
 
     }
 
 
+
+    /*
+        Setea los paths de las carpetas donde se guardara el archivo de pacientes
+        @return void
+     */
+    private void setPaths()    {
+        this.USER_PATH=System.getProperty("user.dir");
+        this.TURNOS_PATH="" + USER_PATH + "\\turnosVacunacion";
+        //this.AISLADOS_PATH="" + USER_PATH + "\\aislados";
+        this.USUARIOS_PATH=""+USER_PATH+"\\usuarios";
+
+    }
+    private void setListaPacientes(){
+        this.listaPacientes=cargarPacientesDeArchivo();
+    }
+    private void setMapaTurnos(){
+        this.MapaTurnos=cargarTurnosDeArchivo();
+    }
+
+
+
+    //INGRESOS X TECLADO
 
     /*
 Muestra Enum Barrios
@@ -60,25 +85,29 @@ Muestra Enum Barrios
 Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 @return void
  */
-    public void ingresarPacienteXteclado() {
+    public void ingresarPacienteXteclado() throws IOException {
         Scanner scanner = new Scanner(System.in);
         String nombre;
         int documento;
         char sexo;
         Barrios barrio;
+        Paciente nuevo = new Paciente();
 
-        nombre=seleccionarNombre();
-        documento = seleccionarDni();
-        sexo = seleccionarSexo();
-        barrio = seleccionarBarrio();
-        System.out.println(barrio);
+        boolean comp=false;
+        while (comp==false) {
+            nombre = seleccionarNombre();
+            documento = seleccionarDni();
+            sexo = seleccionarSexo();
+            barrio = seleccionarBarrio();
+            System.out.println(barrio);
 
 
-        Paciente nuevo = new Paciente(documento, nombre, sexo, barrio);
-        listaPacientes.add(nuevo);
-
+            nuevo = new Paciente(documento, nombre, sexo, barrio);
+            listaPacientes.add(nuevo);
+            comp = AgregarPacienteAarchivo(nuevo);
+        }
         System.out.println("Se creo y agrego a la liesta el siguiente paciente \n " + nuevo.toString());
-        AgregarPacienteAarchivo(nuevo);
+
     }
     
     /*
@@ -136,7 +165,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
                 confirm = true;
 
             } else {
-                System.out.println("\n No conocemos ningun sexo que se referencie con la letra " + let + "\n Por favor seleccione F o M para continuar\n");
+                System.out.println("\nERROR------------> No conocemos ningun sexo que se referencie con la letra " + let + "\nPor favor seleccione F o M para continuar\n");
             }
         }
         return let;
@@ -160,7 +189,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
                System.out.println("Nombre valido \n");
                comp=true;
            } else {
-               System.out.println("El nombre solo puede contener letras de la a-z /A-Z \n Vuelva a intentarlo\n ");
+               System.out.println("ERROR------------> El nombre solo puede contener letras de la a-z /A-Z \n Vuelva a intentarlo\n ");
            }
        }
        return nombre;
@@ -258,8 +287,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
     @return void
     @implements JodaTime
      */
-    public void GenerarTurnoVacunacion()
-    {
+    public void GenerarTurnoVacunacion() throws IOException {
 
         Scanner scan=new Scanner(System.in);
         boolean comp=false;
@@ -302,9 +330,17 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             }
         }
 
+
         System.out.println("Se programo su turno de vacunacion para el dia "+fechaTurno.getDayOfMonth()+"/"+fechaTurno.getMonth()+"/"+fechaTurno.getYear()+"\n");
         System.out.println("Fecha programada para el paciente: "+nuevo.toString());
         MapaTurnos.put(nuevo,fechaTurno);
+
+        boolean comp2=AgregarTurnoaArchivo(nuevo,fechaTurno);
+        if (comp2==true)
+        {
+            System.out.println("Se cargo turno en el archivo");
+        }
+
 
     }
 
@@ -384,46 +420,33 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
 ///MANEJO ARCHIVOS
 
-    private void setPaths()    {
-        this.USER_PATH=System.getProperty("user.dir");
-        this.TURNOS_PATH="" + USER_PATH + "\\mapaTurnosVacunacion";
-        //this.AISLADOS_PATH="" + USER_PATH + "\\aislados";
-        this.USUARIOS_PATH=""+USER_PATH+"\\usuarios";
 
-    }
-    private void setListaPacientes(){
-        this.listaPacientes=cargarPacientesDeArchivo();
-    }
+    ///ARCHIVO PACIENTES
 
-
-    public void AgregarPacienteAarchivo(Paciente paciente)
-    {
+    public boolean AgregarPacienteAarchivo(Paciente paciente) throws IOException {
 
         File newPaciente=new File(USUARIOS_PATH+"\\"+paciente.getDni()+".json");
         ObjectMapper mapper=new ObjectMapper();
         boolean comp=false;
+        boolean comp2=false;
+
         setListaPacientes();
 
-        for (Paciente e:listaPacientes)
-        {
-            if(e.getDni()==paciente.getDni())
-            {
-                comp=true;
+            for (Paciente e : listaPacientes) {
+                if (e.getDni() == paciente.getDni()) {
+                    comp = true;
+                }
             }
-        }
-        if (comp==false)
-        {
-            try {
-                mapper.writeValue(newPaciente,paciente);
-            }catch (IOException e)
-            {
-                e.printStackTrace();
+            if (comp == false) {
+
+                mapper.writeValue(newPaciente, paciente);
+                setListaPacientes();
+                comp2=true;
+                return true;
+            } else {
+                System.out.println("\n ERROR------------> El documento seleccionado ya existe en el archivo de Pacientes \nIntentelo de nuevo \n ");
+                return false;
             }
-            setListaPacientes();
-        }
-        else {
-            System.out.println("El documento seleccionado ya existe en el archivo de Pacientes");
-        }
 
 
 
@@ -453,12 +476,6 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         }
         return lista;
     }
-
-    public void AgregarMapaArchivo()
-    {
-
-
-    }
     public void MostrarArchivoPacientes()
     {
         setListaPacientes();
@@ -467,4 +484,82 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             System.out.println(e.toString());
         }
     }
+
+
+
+    //ARCHIVO TURNOS
+    public HashMap<Paciente, LocalDate> cargarTurnosDeArchivo()
+    {
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        HashMap<Paciente,LocalDate>lista=new HashMap<>();
+       
+        File file=new File(TURNOS_PATH);
+
+        if(file.isDirectory())
+        {
+            File files[]=file.listFiles();
+            for(int i=0;i<files.length;i++)
+            {
+                try {
+
+
+
+
+                    lista.put(entry.getKey(),entry.getValue());
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return lista;
+        }
+
+    private boolean AgregarTurnoaArchivo(Paciente p,LocalDate s) throws IOException {
+        int i=0;
+        File nuevoTurno=new File(TURNOS_PATH+"\\TurnoN°"+i+".json");
+        ObjectMapper mapper=new ObjectMapper();
+        boolean comp=false;
+        boolean comp2=false;
+
+        setMapaTurnos();
+
+        if (comp == false) {
+
+            Set<Map.Entry<Paciente, LocalDate>> entries=MapaTurnos.entrySet();
+
+            // Uso mejorado para recorrido
+            for (Paciente e : MapaTurnos.keySet())
+            {
+                if(p.getDni()==e.getDni())
+                {
+                    comp2=true;
+                }
+            }
+            if (comp2=false)
+                {
+                    mapper.writeValue(nuevoTurno,new TypeReference<Map<Paciente,LocalDate>>(){});
+                    return true;
+                }
+
+        } else {
+            System.out.println("\n ERROR------------> El documento seleccionado ya tiene un turno Previsto en el Archivo \nIntentelo de nuevo \n ");
+            System.out.println("El turno que tenia programado corresponde al dia "+MapaTurnos.get(p).toString()+"\n");
+            return false;
+        }
+        return false;
+    }
+    public void MostrarArchivoTurnos()
+    {
+        int i=0;
+        setListaPacientes();
+        for (Paciente e:MapaTurnos.keySet())
+        {
+            System.out.println("Turno N°"+i+"\nPaciente: "+e.toString()+"\nFecha de turno"+MapaTurnos.get(e).toString());
+        }
+    }
+
+
 }

@@ -7,7 +7,5 @@ public enum Barrios {
     Puerto,
     Luro,
     DonBosco
-
-
-
+    
 }
