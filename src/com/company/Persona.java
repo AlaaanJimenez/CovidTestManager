@@ -1,4 +1,6 @@
 package com.company;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public abstract class Persona {
 

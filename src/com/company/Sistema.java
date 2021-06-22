@@ -3,20 +3,27 @@ package com.company;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import javax.print.DocFlavor;
 import javax.swing.table.TableRowSorter;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jdk.swing.interop.SwingInterOpUtils;
 
 
 public class Sistema {
 
     private static int año=2021;
+
+
 
     private LocalDate fechaActual=LocalDate.now();
     private ArrayList<Personal> listaPersonal;
@@ -28,14 +35,13 @@ public class Sistema {
     private String USER_PATH;
     private String TURNOS_PATH;
     private String USUARIOS_PATH;
-    private Object Paciente;
-    private Object LocalDate;
 
 
     //Constructor
     public Sistema() {
         listaPacientes=new ArrayList<>();
         listaPersonal=new ArrayList<>();
+        disableWarning();
         setPaths();
         setListaPacientes();
         setMapaTurnos();
@@ -60,9 +66,17 @@ public class Sistema {
         this.listaPacientes=cargarPacientesDeArchivo();
     }
     private void setMapaTurnos(){
-        this.MapaTurnos=cargarTurnosDeArchivo();
-    }
 
+        ArrayList<MapaEntry>map=GenerarMapaDeArchivo();
+        for (MapaEntry e:map)
+        {
+            MapaTurnos.put(e.getPaciente(),e.getDate());
+        }
+    }
+    public static void disableWarning() {
+        System.err.close();
+        System.setErr(System.out);
+    }
 
 
     //INGRESOS X TECLADO
@@ -333,9 +347,9 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
         System.out.println("Se programo su turno de vacunacion para el dia "+fechaTurno.getDayOfMonth()+"/"+fechaTurno.getMonth()+"/"+fechaTurno.getYear()+"\n");
         System.out.println("Fecha programada para el paciente: "+nuevo.toString());
-        MapaTurnos.put(nuevo,fechaTurno);
-
-        boolean comp2=AgregarTurnoaArchivo(nuevo,fechaTurno);
+        setMapaTurnos();
+        MapaEntry a=new MapaEntry(nuevo,fechaTurno);
+        boolean comp2=AgregarTurnoaArchivo(a);
         if (comp2==true)
         {
             System.out.println("Se cargo turno en el archivo");
@@ -382,7 +396,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
         MapaTurnos.put(a,date1);
         MapaTurnos.put(b,date3);
-        MapaTurnos.put(c,date4);
+        //MapaTurnos.put(c,date4);
         MapaTurnos.put(d,date1);
         //MapaTurnos.put(b,date3);
     }
@@ -488,13 +502,19 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
 
     //ARCHIVO TURNOS
-    public HashMap<Paciente, LocalDate> cargarTurnosDeArchivo()
+    /*
+    Guarda en Archivo un json de Mapa entry
+    Utiliza LocalDate en archivo por lo que se creo un serializador y deserializador especial
+    @return ArrayList<MapaEntry>
+     */
+    public ArrayList<MapaEntry> GenerarMapaDeArchivo()
     {
+        MapaEntry nueva=new MapaEntry();
+
         ObjectMapper mapper=new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        HashMap<Paciente,LocalDate>lista=new HashMap<>();
-       
+        ArrayList<MapaEntry>lista=new ArrayList<>();
         File file=new File(TURNOS_PATH);
 
         if(file.isDirectory())
@@ -503,11 +523,10 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             for(int i=0;i<files.length;i++)
             {
                 try {
-
-
-
-
-                    lista.put(entry.getKey(),entry.getValue());
+                    String json;
+                    json=mapper.readValue(files[i],String.class);
+                    nueva=mapper.readValue(json,MapaEntry.class);
+                    lista.add(nueva);
                 }catch (IOException e)
                 {
                     e.printStackTrace();
@@ -515,42 +534,42 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             }
         }
         return lista;
-        }
 
-    private boolean AgregarTurnoaArchivo(Paciente p,LocalDate s) throws IOException {
-        int i=0;
-        File nuevoTurno=new File(TURNOS_PATH+"\\TurnoN°"+i+".json");
-        ObjectMapper mapper=new ObjectMapper();
+    }
+    private boolean AgregarTurnoaArchivo(MapaEntry p) throws IOException {
+
         boolean comp=false;
         boolean comp2=false;
+        int i = MapaTurnos.size() + 1;
+
+        File nuevoTurno = new File(TURNOS_PATH + "\\TurnoN°" + i + ".json");
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+
 
         setMapaTurnos();
 
+        for (Paciente e : MapaTurnos.keySet())
+        {
+            if (e.getDni() == p.getPaciente().getDni()) {
+                comp = true;
+            }
+        }
         if (comp == false) {
 
-            Set<Map.Entry<Paciente, LocalDate>> entries=MapaTurnos.entrySet();
-
-            // Uso mejorado para recorrido
-            for (Paciente e : MapaTurnos.keySet())
-            {
-                if(p.getDni()==e.getDni())
-                {
-                    comp2=true;
-                }
-            }
-            if (comp2=false)
-                {
-                    mapper.writeValue(nuevoTurno,new TypeReference<Map<Paciente,LocalDate>>(){});
-                    return true;
-                }
-
+            String json=mapper.writeValueAsString(p);
+            mapper.writeValue(nuevoTurno,json);
+            setMapaTurnos();
+            comp2=true;
+            return true;
         } else {
-            System.out.println("\n ERROR------------> El documento seleccionado ya tiene un turno Previsto en el Archivo \nIntentelo de nuevo \n ");
-            System.out.println("El turno que tenia programado corresponde al dia "+MapaTurnos.get(p).toString()+"\n");
+            System.out.println("\n ERROR------------> El documento seleccionado ya existe en el archivo de tURNOS \nIntentelo de nuevo \n ");
             return false;
         }
-        return false;
+
+
     }
+
     public void MostrarArchivoTurnos()
     {
         int i=0;

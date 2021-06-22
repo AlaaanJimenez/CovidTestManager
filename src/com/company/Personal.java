@@ -1,5 +1,6 @@
 package com.company;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class Personal extends Persona {
 
     private static int identificador;
