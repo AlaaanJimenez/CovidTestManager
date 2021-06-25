@@ -1,9 +1,13 @@
 package com.company;
+<<<<<<< HEAD
 import java.io.IOException;
+=======
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 import java.util.*;
 
 public class Main {
 
+<<<<<<< HEAD
     public static void main(String[] args) throws IOException {
 
         Sistema sistem=new Sistema();
@@ -13,10 +17,21 @@ public class Main {
         //sistem.cargarPacientes();
         //sistem.GenerarTurnoVacunacion();
         //sistem.GenerarTurnoVacunacion();
+=======
+    public static void main(String[] args) {
+
+        Sistema sistem=new Sistema();
+        sistem.ingresarPacienteXteclado();
+        sistem.ingresarPacienteXteclado();
+        sistem.MostrarArchivoPacientes();
+        //sistem.cargarPacientes();
+        //sistem.GenerarTurnoVacunacion();
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
         //sistem.MostrarMapaTurnos();
         //sistem.VerificarTurnosDiadeHoy();
         //sistem.busquedaPacientexID(2);
+<<<<<<< HEAD
 
 
 
@@ -54,4 +69,7 @@ public class Main {
 
 
 
+=======
+    }
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 }

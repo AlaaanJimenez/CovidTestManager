@@ -3,12 +3,16 @@ package com.company;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+<<<<<<< HEAD
 import javax.print.DocFlavor;
+=======
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 import javax.swing.table.TableRowSorter;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.time.LocalDate;
+<<<<<<< HEAD
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,14 +21,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jdk.swing.interop.SwingInterOpUtils;
+=======
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
 
 public class Sistema {
 
     private static int año=2021;
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
     private LocalDate fechaActual=LocalDate.now();
     private ArrayList<Personal> listaPersonal;
     private List<Paciente> listaPacientes;
@@ -35,8 +46,13 @@ public class Sistema {
     private String USER_PATH;
     private String TURNOS_PATH;
     private String USUARIOS_PATH;
+<<<<<<< HEAD
     private String AISLADOS_PATH;
     private String SANOS_PATH;
+=======
+
+
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
 
     //Constructor
@@ -45,12 +61,16 @@ public class Sistema {
         listaPersonal=new ArrayList<>();
         setPaths();
         setListaPacientes();
+<<<<<<< HEAD
         setMapaTurnos();
+=======
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
 
     }
 
 
+<<<<<<< HEAD
     /*
         Setea los paths de las carpetas donde se guardara el archivo de pacientes
         @return void
@@ -79,6 +99,20 @@ public class Sistema {
     }
 
 
+=======
+
+    /*
+Muestra Enum Barrios
+@return void/String
+ */
+    public void mostrarBarrios() {
+        Barrios[] Enums = Barrios.values();
+        for (int i = 0; i < Barrios.values().length; i++) {
+            System.out.println(i + ")" + Enums[i].toString() + "");
+        }
+
+    }
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
     ///Validaciones ingreso x Teclado
 
@@ -86,12 +120,17 @@ public class Sistema {
 Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 @return void
  */
+<<<<<<< HEAD
     public void ingresarPacienteXteclado() throws IOException {
+=======
+    public void ingresarPacienteXteclado() {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         Scanner scanner = new Scanner(System.in);
         String nombre;
         int documento;
         char sexo;
         Barrios barrio;
+<<<<<<< HEAD
         Paciente nuevo = new Paciente();
 
         boolean comp=false;
@@ -109,6 +148,21 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         }
         System.out.println("Se creo y agrego a la liesta el siguiente paciente \n " + nuevo.toString());
 
+=======
+
+        nombre=seleccionarNombre();
+        documento = seleccionarDni();
+        sexo = seleccionarSexo();
+        barrio = seleccionarBarrio();
+        System.out.println(barrio);
+
+
+        Paciente nuevo = new Paciente(documento, nombre, sexo, barrio);
+        listaPacientes.add(nuevo);
+
+        System.out.println("Se creo y agrego a la liesta el siguiente paciente \n " + nuevo.toString());
+        AgregarPacienteAarchivo(nuevo);
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
     }
     
     /*
@@ -117,7 +171,11 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
     @return Barrio
 
      */
+<<<<<<< HEAD
     private Barrios seleccionarBarrio(){
+=======
+    private Barrios seleccionarBarrio()    {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         Barrios[] Enums = Barrios.values();
         Barrios s = null;
         Scanner scann = new Scanner(System.in);
@@ -166,7 +224,11 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
                 confirm = true;
 
             } else {
+<<<<<<< HEAD
                 System.out.println("\nERROR------------> No conocemos ningun sexo que se referencie con la letra " + let + "\nPor favor seleccione F o M para continuar\n");
+=======
+                System.out.println("\n No conocemos ningun sexo que se referencie con la letra " + let + "\n Por favor seleccione F o M para continuar\n");
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
             }
         }
         return let;
@@ -190,7 +252,11 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
                System.out.println("Nombre valido \n");
                comp=true;
            } else {
+<<<<<<< HEAD
                System.out.println("ERROR------------> El nombre solo puede contener letras de la a-z /A-Z \n Vuelva a intentarlo\n ");
+=======
+               System.out.println("El nombre solo puede contener letras de la a-z /A-Z \n Vuelva a intentarlo\n ");
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
            }
        }
        return nombre;
@@ -239,7 +305,51 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
     }
 
 
+<<<<<<< HEAD
 ///----------------------------------------------------------/// METODOS ///---------------------------------------------------------------------///
+=======
+
+
+
+    ///METODOS
+
+
+    /*
+  Solicita al usuario seleccionar un id por teclado y busca en la lista al paciente
+  @return Paciente
+   */
+    public Paciente busquedaPacientexID()
+    {
+        boolean comp=false;
+        String cas;
+        Scanner scan=new Scanner(System.in);
+        Paciente nuevo=new Paciente();
+        int num;
+
+        while (comp !=true) {
+            System.out.println("Por favor ingrese su numero de ID \n");
+            num = scan.nextInt();
+
+            System.out.println("El numerode ID que ingreso ( " + num + " )\nCorresponde al usuario con los siguientes datos: \n");
+            nuevo = listaPacientes.get(num);
+            System.out.println(nuevo.toString());
+
+            System.out.println("Desea realizar un turno para el usuario con los Datos mostrados en pantalla ?  S/N");
+            cas=scan.next();
+
+            if(cas.charAt(0) == 's'||cas.charAt(0) =='S' )
+            {
+                comp=true;
+            }
+            else
+            {
+                comp=false;
+            }
+        }
+
+        return nuevo;
+    }
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
 
     /*
@@ -248,7 +358,12 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
     @return void
     @implements JodaTime
      */
+<<<<<<< HEAD
     public void GenerarTurnoVacunacion() throws IOException {
+=======
+    public void GenerarTurnoVacunacion()
+    {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
         Scanner scan=new Scanner(System.in);
         boolean comp=false;
@@ -260,6 +375,15 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         LocalDate fechaTurno=LocalDate.now();
         LocalDate fechaLimiteReserva=LocalDate.now();
         fechaLimiteReserva=fechaActual.plusDays(30);
+<<<<<<< HEAD
+=======
+
+        System.out.println(fechaActual);
+        System.out.println(fechaLimiteReserva);
+
+
+
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         Paciente nuevo=busquedaPacientexID();
 
 
@@ -285,6 +409,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             }
         }
 
+<<<<<<< HEAD
 
         System.out.println("Se programo su turno de vacunacion para el dia "+fechaTurno.getDayOfMonth()+"/"+fechaTurno.getMonth()+"/"+fechaTurno.getYear()+"\n");
         System.out.println("Fecha programada para el paciente: "+nuevo.toString());
@@ -296,14 +421,25 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             System.out.println("Se cargo turno en el archivo");
         }
 
+=======
+        System.out.println("Se programo su turno de vacunacion para el dia "+fechaTurno.getDayOfMonth()+"/"+fechaTurno.getMonth()+"/"+fechaTurno.getYear()+"\n");
+        System.out.println("Fecha programada para el paciente: "+nuevo.toString());
+        MapaTurnos.put(nuevo,fechaTurno);
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
     }
 
     ///Mostrar Listas/Mapas
+<<<<<<< HEAD
     /*
     Muestra por pantalla usuario y numero de turno
 */
     public void MostrarMapaTurnos(){
+=======
+
+    public void MostrarMapaTurnos()
+    {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         int i=0;
 
         for(Paciente a:MapaTurnos.keySet())
@@ -314,6 +450,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
     }
 
+<<<<<<< HEAD
     /*
    Muestra Enum Barrios
    @return void/String
@@ -326,6 +463,12 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
     }
 ///----------------------------------------------------------/// Metodos de Testing ///----------------------------------------------------------///
+=======
+
+
+
+///Metodos manejo interno
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
     public void cargarPacientes() {
         Paciente a = new Paciente(41079103, "alan", 'm', Barrios.Constitucion);
@@ -346,11 +489,16 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
         MapaTurnos.put(a,date1);
         MapaTurnos.put(b,date3);
+<<<<<<< HEAD
         //MapaTurnos.put(c,date4);
+=======
+        MapaTurnos.put(c,date4);
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         MapaTurnos.put(d,date1);
         //MapaTurnos.put(b,date3);
     }
 
+<<<<<<< HEAD
 ///----------------------------------------------------------/// Funciones Personal ///----------------------------------------------------------///
     /*
   Solicita al usuario seleccionar un id por teclado y busca en la lista al paciente
@@ -398,12 +546,21 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
         return nuevo;
     }
+=======
+///Funciones Personal
+
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
     /*
     Recorre el mapa buscando fechas identicas a las del dia de la fecha
     @return void
      */
+<<<<<<< HEAD
     public void VerificarTurnosDiadeHoy(){
+=======
+    public void VerificarTurnosDiadeHoy()
+    {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
         int d =0;
         int i=0;
         StringBuilder sb =new StringBuilder();
@@ -425,6 +582,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
         }
     }
 
+<<<<<<< HEAD
     /*
   Pide id de usuario por teclado y realiza testeo
   El testeo retorna un random entre 42 y 36 grados
@@ -512,10 +670,30 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
     @return void
      */
     public boolean AgregarPacienteAarchivo(Paciente paciente) throws IOException {
+=======
+
+///MANEJO ARCHIVOS
+
+    private void setPaths()    {
+        this.USER_PATH=System.getProperty("user.dir");
+        this.TURNOS_PATH="" + USER_PATH + "\\mapaTurnosVacunacion";
+        //this.AISLADOS_PATH="" + USER_PATH + "\\aislados";
+        this.USUARIOS_PATH=""+USER_PATH+"\\usuarios";
+
+    }
+    private void setListaPacientes(){
+        this.listaPacientes=cargarPacientesDeArchivo();
+    }
+
+
+    public void AgregarPacienteAarchivo(Paciente paciente)
+    {
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
         File newPaciente=new File(USUARIOS_PATH+"\\"+paciente.getDni()+".json");
         ObjectMapper mapper=new ObjectMapper();
         boolean comp=false;
+<<<<<<< HEAD
         boolean comp2=false;
 
         setListaPacientes();
@@ -670,6 +848,42 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
         ArrayList<MapaEntry>lista=new ArrayList<>();
         File file=new File(TURNOS_PATH);
+=======
+        setListaPacientes();
+
+        for (Paciente e:listaPacientes)
+        {
+            if(e.getDni()==paciente.getDni())
+            {
+                comp=true;
+            }
+        }
+        if (comp==false)
+        {
+            try {
+                mapper.writeValue(newPaciente,paciente);
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            setListaPacientes();
+        }
+        else {
+            System.out.println("El documento seleccionado ya existe en el archivo de Pacientes");
+        }
+
+
+
+    }
+
+    public ArrayList<Paciente> cargarPacientesDeArchivo()
+    {
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        ArrayList<Paciente>lista=new ArrayList<>();
+        File file=new File(USUARIOS_PATH);
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 
         if(file.isDirectory())
         {
@@ -677,10 +891,15 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             for(int i=0;i<files.length;i++)
             {
                 try {
+<<<<<<< HEAD
                     String json;
                     json=mapper.readValue(files[i],String.class);
                     nueva=mapper.readValue(json,MapaEntry.class);
                     lista.add(nueva);
+=======
+                    Paciente p=mapper.readValue(files[i],Paciente.class);
+                    lista.add(p);
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
                 }catch (IOException e)
                 {
                     e.printStackTrace();
@@ -688,6 +907,7 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
             }
         }
         return lista;
+<<<<<<< HEAD
 
     }
 
@@ -770,4 +990,21 @@ Ingresa paciente x teclado y Añade al Arraylist de Pacientes
 
 
 
+=======
+    }
+
+    public void AgregarMapaArchivo()
+    {
+
+
+    }
+    public void MostrarArchivoPacientes()
+    {
+        setListaPacientes();
+        for (Paciente e:listaPacientes)
+        {
+            System.out.println(e.toString());
+        }
+    }
+>>>>>>> 0357fcf0ce648ce09f91edf45a7f0ea740320f40
 }
